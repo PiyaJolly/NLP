@@ -13,8 +13,6 @@ from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
 
 nltk.download('stopwords')
-# nltk.download('punkt')
-# nltk.download('wordnet')
 
 from sklearn.svm import LinearSVC
 from sklearn.tree import DecisionTreeClassifier
@@ -179,6 +177,6 @@ for m, n in zip(models, model_names):
 
     df_results.loc[n] = [None, None, None, accuracy, run_time]
     del m
-    
+
 print(df_results)
 
