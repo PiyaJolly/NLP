@@ -17,7 +17,7 @@ nltk.download('stopwords')
 # nltk.download('punkt')
 # nltk.download('wordnet')
 
-# from sklearn.svm import LinearSVC
+from sklearn.svm import LinearSVC
 # from sklearn.tree import DecisionTreeClassifier
 # from sklearn.linear_model import LogisticRegression
 # from sklearn.ensemble import (RandomForestClassifier,
@@ -99,3 +99,7 @@ X_train, X_test, y_train, y_test = train_test_split(
     random_state=1234, 
     shuffle= True
 )
+
+svc = LinearSVC()
+
+
