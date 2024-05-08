@@ -1,13 +1,12 @@
-# from time import time
-# from timeit import default_timer as timer
-# import numpy as np
+from time import time
+from timeit import default_timer as timer
+import numpy as np
 import pandas as pd
 import nltk
 import re
 import string
 
 from sklearn.model_selection import train_test_split
-# from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
@@ -19,11 +18,8 @@ nltk.download('stopwords')
 
 from sklearn.svm import LinearSVC
 # from sklearn.tree import DecisionTreeClassifier
-# from sklearn.linear_model import LogisticRegression
-# from sklearn.ensemble import (RandomForestClassifier,
-#                               AdaBoostClassifier,
-#                               GradientBoostingClassifier,
-#                               HistGradientBoostingClassifier)
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestClassifier
 # from xgboost import XGBClassifier
 # from lightgbm import LGBMClassifier
 # from catboost import CatBoostClassifier
@@ -86,12 +82,13 @@ dataset['contains_due'] = dataset['message_cleaned'].str.contains('due', case=Fa
 
 tfidf = TfidfVectorizer(max_features=1000, analyzer='word', ngram_range=(1,1))
 tfidf_features = tfidf.fit_transform(dataset['message_cleaned']).toarray()
-tfidf_df = pd.DataFrame(tfidf_features.toarray(), columns=tfidf.get_feature_names_out())
+tfidf_df = pd.DataFrame(tfidf_features, columns=tfidf.get_feature_names_out())
 dataset = pd.concat([dataset, tfidf_df], axis=1)
 
 dataset.drop(['message', 'message_cleaned'], axis=1, inplace=True)
 X, y = dataset.drop('label', axis=1), dataset['label']
 
+# Split training and texting data
 X_train, X_test, y_train, y_test = train_test_split(
     X,
     y,
@@ -100,6 +97,35 @@ X_train, X_test, y_train, y_test = train_test_split(
     shuffle= True
 )
 
+# Build the models
+
+# LinearSVC
 svc = LinearSVC()
 
+# Linear Regression
+lr = LinearRegression()
+
+# Random Forest
+rf = RandomForestClassifier(n_estimators=500,
+                            max_features=0.06,
+                            n_jobs=6,
+                            random_state=1234)
+
+df_results = pd.DataFrame(columns=['F1_score', 'Precision', 'Recall', 'Accuracy', 'Execution time'])
+
+models = [svc, lr, rf]
+model_names = [i.__class__.__name__ for i in models]
+
+start = timer()
+
+for m, n in zip(models, model_names):
+    start_time = time()
+    m.fit(X_train, y_train)
+
+    run_time = time() - start_time
+    accuracy = np.mean(m.predict(X_test) == y_test)
+
+    df_results.loc[n] = [None, None, None, accuracy, run_time]
+    del m
+print(df_results)
 
