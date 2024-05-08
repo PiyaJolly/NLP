@@ -17,12 +17,15 @@ nltk.download('stopwords')
 # nltk.download('wordnet')
 
 from sklearn.svm import LinearSVC
-# from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.linear_model import LinearRegression
-from sklearn.ensemble import RandomForestClassifier
-# from xgboost import XGBClassifier
-# from lightgbm import LGBMClassifier
-# from catboost import CatBoostClassifier
+from sklearn.ensemble import (RandomForestClassifier,
+                              AdaBoostClassifier,
+                              GradientBoostingClassifier,
+                              HistGradientBoostingClassifier)
+from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
+from catboost import CatBoostClassifier
 
 # import matplotlib.pyplot as plt
 # import seaborn as sns
@@ -111,21 +114,71 @@ rf = RandomForestClassifier(n_estimators=500,
                             n_jobs=6,
                             random_state=1234)
 
-df_results = pd.DataFrame(columns=['F1_score', 'Precision', 'Recall', 'Accuracy', 'Execution time'])
+# Adaboost
+base_estim = DecisionTreeClassifier(max_depth=1, max_features=0.06)                            
+ab = AdaBoostClassifier(base_estimator=base_estim,
+                        n_estimators=500,
+                        learning_rate=0.5,
+                        random_state=1234) 
 
-models = [svc, lr, rf]
+# Gradient Boosted Decision Trees
+gbm = GradientBoostingClassifier(n_estimators=2000,
+                                 subsample=0.67,
+                                 max_features=0.06,
+                                 validation_fraction=0.1,
+                                 n_iter_no_change=15,
+                                 verbose=0,
+                                 random_state=1234)
+
+#XGBoost
+xgb = XGBClassifier(n_estimators=2000,
+                    tree_method='hist',
+                    subsample=0.67,
+                    colsample_level=0.06,
+                    verbose=0,
+                    n_jobs=6,
+                    random_state=1234)
+
+#CatBoost
+cb = CatBoostClassifier(n_estimators=2000,
+                        colsample_bylevel=0.06,
+                        max_leaves=31,
+                        subsample=0.67,
+                        thread_count=6,
+                        verbose=0,
+                        random_state=1234)
+
+df_results = pd.DataFrame(columns=['F1_score',
+                                   'Precision',
+                                   'Recall',
+                                   'Accuracy',
+                                   'Execution time'])
+
+models = [svc, lr, rf, ab, xgb, cb]
 model_names = [i.__class__.__name__ for i in models]
+
+esp_models = ['XGBClassifier',
+             'CatBoostClassifier']
 
 start = timer()
 
 for m, n in zip(models, model_names):
-    start_time = time()
-    m.fit(X_train, y_train)
+    if n in esp_models:
+        start_time = time()
+        m.fit(X_train,
+              y_train,
+              eval_set = [(X_test, y_test)],
+              early_stopping_rounds=15,
+              verbose=0)
+    else:
+        start_time = time()
+        m.fit(X_train, y_train)
 
     run_time = time() - start_time
     accuracy = np.mean(m.predict(X_test) == y_test)
 
     df_results.loc[n] = [None, None, None, accuracy, run_time]
     del m
+    
 print(df_results)
 
