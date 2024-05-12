@@ -7,6 +7,7 @@ import re
 import string
 
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import precision_score, recall_score, f1_score
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
@@ -146,6 +147,7 @@ cb = CatBoostClassifier(n_estimators=2000,
                         verbose=0,
                         random_state=1234)
 
+# Intialise results dataframe
 df_results = pd.DataFrame(columns=['F1_score',
                                    'Precision',
                                    'Recall',
@@ -174,8 +176,11 @@ for m, n in zip(models, model_names):
 
     run_time = time() - start_time
     accuracy = np.mean(m.predict(X_test) == y_test)
+    precision = precision_score(y_test, m.predict(X_test))
+    recall = recall_score(y_test, m.predict(X_test))
+    f1 = f1_score(y_test, m.predict(X_test))
 
-    df_results.loc[n] = [None, None, None, accuracy, run_time]
+    df_results.loc[n] = [f1, precision, recall, accuracy, run_time]
     del m
 
 print(df_results)
