@@ -27,6 +27,7 @@ from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
 
 import matplotlib.pyplot as plt
+import pickle
 # import seaborn as sns
 
 def clean_text(text):
@@ -67,27 +68,28 @@ dataset['has_lowercase'] = dataset['message'].apply(lambda x: any(char.islower()
 dataset['has_titlecase'] = dataset['message'].apply(lambda x: any(char.istitle() for char in x))
 dataset['has_special_characters'] = dataset['message'].apply(lambda x: any(char in ['$', '#', '@'] for char in x))
 dataset['has_numerical_digits'] = dataset['message'].apply(lambda x: any(char.isdigit() for char in x))
-dataset['contains_discount'] = dataset['message_cleaned'].str.contains('discount', case=False).astype(int)
-dataset['contains_free'] = dataset['message_cleaned'].str.contains('free', case=False).astype(int)
-dataset['contains_please'] = dataset['message_cleaned'].str.contains('please', case=False).astype(int)
-dataset['contains_account'] = dataset['message_cleaned'].str.contains('account', case=False).astype(int)
-dataset['contains_customer'] = dataset['message_cleaned'].str.contains('customer', case=False).astype(int)
-dataset['contains_card'] = dataset['message_cleaned'].str.contains('card', case=False).astype(int)
-dataset['contains_email'] = dataset['message_cleaned'].str.contains('email', case=False).astype(int)
-dataset['contains_details'] = dataset['message_cleaned'].str.contains('details', case=False).astype(int)
-dataset['contains_update'] = dataset['message_cleaned'].str.contains('update', case=False).astype(int)
-dataset['contains_online'] = dataset['message_cleaned'].str.contains('online', case=False).astype(int)
-dataset['contains_bank'] = dataset['message_cleaned'].str.contains('bank', case=False).astype(int)
-dataset['contains_link'] = dataset['message_cleaned'].str.contains('link', case=False).astype(int)
-dataset['contains_refund'] = dataset['message_cleaned'].str.contains('refund', case=False).astype(int)
-dataset['contains_due'] = dataset['message_cleaned'].str.contains('due', case=False).astype(int)
+dataset['contains_discount'] = dataset['message'].str.contains('discount', case=False).astype(int)
+dataset['contains_free'] = dataset['message'].str.contains('free', case=False).astype(int)
+dataset['contains_please'] = dataset['message'].str.contains('please', case=False).astype(int)
+dataset['contains_account'] = dataset['message'].str.contains('account', case=False).astype(int)
+dataset['contains_customer'] = dataset['message'].str.contains('customer', case=False).astype(int)
+dataset['contains_card'] = dataset['message'].str.contains('card', case=False).astype(int)
+dataset['contains_email'] = dataset['message'].str.contains('email', case=False).astype(int)
+dataset['contains_details'] = dataset['message'].str.contains('details', case=False).astype(int)
+dataset['contains_update'] = dataset['message'].str.contains('update', case=False).astype(int)
+dataset['contains_online'] = dataset['message'].str.contains('online', case=False).astype(int)
+dataset['contains_bank'] = dataset['message'].str.contains('bank', case=False).astype(int)
+dataset['contains_link'] = dataset['message'].str.contains('link', case=False).astype(int)
+dataset['contains_refund'] = dataset['message'].str.contains('refund', case=False).astype(int)
+dataset['contains_due'] = dataset['message'].str.contains('due', case=False).astype(int)
 
-tfidf = TfidfVectorizer(max_features=1000, analyzer='word', ngram_range=(1,1))
-tfidf_features = tfidf.fit_transform(dataset['message_cleaned']).toarray()
-tfidf_df = pd.DataFrame(tfidf_features, columns=tfidf.get_feature_names_out())
+vectoriser = TfidfVectorizer(max_features=1000, analyzer='word', ngram_range=(1,1))
+tfidf_features = vectoriser.fit_transform(dataset['message_cleaned']).toarray()
+pickle.dump(vectoriser, open('tfidf.pkl', 'wb'))
+tfidf_df = pd.DataFrame(tfidf_features, columns=vectoriser.get_feature_names_out())
 dataset = pd.concat([dataset, tfidf_df], axis=1)
 
-dataset.drop(['message', 'message_cleaned'], axis=1, inplace=True)
+dataset.drop(['message','message_cleaned'], axis=1, inplace=True)
 X, y = dataset.drop('label', axis=1), dataset['label']
 
 # Split training and texting data
@@ -186,6 +188,8 @@ for m, n in zip(models, model_names):
     df_results.loc[n] = [f1, precision, recall, accuracy, auc_score, run_time]
     
     del m
+
+pickle.dump(cb, open('model.pkl', 'wb'))
 
 print(df_results)
 
