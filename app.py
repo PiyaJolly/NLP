@@ -30,7 +30,7 @@ class App(tk.Tk):
             self.entry.insert(tk.END, text)
         
         def insert_ham(event):
-            text = "Hi , where are you? We're at  and they're not keen to go out i kind of am but feel i shouldn't so can we go out tomo, don't mind do you?"
+            text = "Hi ,where are you? We're at Jane's place and they're not keen to go out. I kind of am but feel I shouldn't so can we go out tomorrow? Don't mind do you?"
             self.entry.delete("1.0", tk.END) 
             self.entry.insert(tk.END, text)
 
