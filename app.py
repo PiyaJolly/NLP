@@ -15,13 +15,13 @@ class App(tk.Tk):
 
         self.title("Smishing Detection Tool")
 
-        self.title_label = tk.Label(self, text="Smishing Detector", font=("Helvetica", 18, "bold"))
+        self.title_label = tk.Label(self, text="Smishing Detector", font=("Helvetica", 24, "bold"))
         self.title_label.grid(row=0, column=0, columnspan=4, pady=(20,0), padx=15, sticky=tk.NSEW)
 
-        self.description_label = tk.Label(self, text="This tool analyses text messages to detect potential\nSMS phishing attempts.", font=("Helvetica", 16))
+        self.description_label = tk.Label(self, text="This tool analyses text messages to detect potential\nSMS phishing attempts.", font=("Helvetica", 22))
         self.description_label.grid(row=1, column=0, columnspan=4, pady=(0,5), padx=15, sticky=tk.NSEW)
 
-        self.examples_label = tk.Label(self, text="Examples:", font=("Helvetica", 16))
+        self.examples_label = tk.Label(self, text="Examples:", font=("Helvetica", 22))
         self.examples_label.grid(row=2, column=0, padx=20, sticky=tk.W)
 
         def insert_spam(event):
@@ -34,20 +34,20 @@ class App(tk.Tk):
             self.entry.delete("1.0", tk.END) 
             self.entry.insert(tk.END, text)
 
-        self.smishing_label = tk.Label(self, text="smishing", font=("Helvetica", 16), foreground='#3477eb')
+        self.smishing_label = tk.Label(self, text="smishing", font=("Helvetica", 22), foreground='#3477eb')
         self.smishing_label.grid(row=3, column=0, pady=(0,10), padx=(20,5), sticky=tk.W)
         self.smishing_label.bind("<Enter>", lambda event: self.smishing_label.config(cursor="hand2"))
         self.smishing_label.bind("<Button-1>", insert_spam)
 
-        self.nonsmishing_label = tk.Label(self, text="non-smishing", font=("Helvetica", 16), foreground='#3477eb')
+        self.nonsmishing_label = tk.Label(self, text="non-smishing", font=("Helvetica", 22), foreground='#3477eb')
         self.nonsmishing_label.grid(row=3, column=0, pady=(0,10), sticky=tk.E)
         self.nonsmishing_label.bind("<Enter>", lambda event: self.nonsmishing_label.config(cursor="hand2"))
         self.nonsmishing_label.bind("<Button-1>", insert_ham)
         
-        self.entry = tk.Text(self, height=10, width=50, wrap="word", highlightcolor='#3477eb', highlightthickness=1)
+        self.entry = tk.Text(self, height=10, width=50, wrap="word", highlightcolor='#3477eb', highlightthickness=1, font=("Helvetica", 22))
         self.entry.grid(row=4, column=0,columnspan=4, padx=20, sticky=tk.NSEW)
         
-        self.button = tk.Button(self, text="Verify", command=lambda: self.verifyMsg())
+        self.button = tk.Button(self, text="Verify", height=2, width=15, command=lambda: self.verifyMsg(), font=("Helvetica", 22))
         self.button.grid(row=5, column=0, columnspan=4, pady=28)
 
     def verifyMsg(self):
@@ -88,18 +88,18 @@ class App(tk.Tk):
         self.button.destroy()
         del self.button
         if predictions == 0:
-            self.detection_label = tk.Label(self, text="No smishing content detected.\nThe message appears to be safe", font=("Helvetica", 16), foreground="#09870e")
+            self.detection_label = tk.Label(self, text="No smishing content detected.\nThe message appears to be safe", font=("Helvetica", 22), foreground="#09870e")
             self.detection_label.grid(row=5, column=0, columnspan=4, pady=20, sticky=tk.NSEW)
         else:
-            self.detection_label = tk.Label(self, text="Potential smishing content detect! Exercise\ncaution and do not provide personal information.", font=("Helvetica", 16), foreground="#a10c0a")
+            self.detection_label = tk.Label(self, text="Potential smishing content detect! Exercise\ncaution and do not provide personal information.", font=("Helvetica", 22), foreground="#a10c0a")
             self.detection_label.grid(row=5, column=0, columnspan=4, pady=20, sticky=tk.NSEW)
-        self.empty_label = tk.Label(self, text='clear', font=('Helvetica', 16, 'bold'), background="white", foreground='#3477eb')
-        self.empty_label.place(relx=0.88, rely=0.73, anchor=tk.CENTER)
+        self.empty_label = tk.Label(self, text='clear', font=('Helvetica', 22, 'bold'), background="white", foreground='#3477eb')
+        self.empty_label.place(relx=0.9, rely=0.76, anchor=tk.CENTER)
         self.empty_label.bind("<Enter>", lambda event: self.empty_label.config(cursor="hand2"))
         self.empty_label.bind("<Button-1>", self.reset)
 
     def reset(self, event):
-        self.button = tk.Button(self, text="Verify", command=lambda: self.verifyMsg())
+        self.button = tk.Button(self, text="Verify", height=2, width=15, command=lambda: self.verifyMsg(), font=("Helvetica", 22))
         self.button.grid(row=5, column=0, columnspan=4, pady=28)
         self.empty_label.destroy()
         del self.empty_label
