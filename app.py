@@ -44,7 +44,7 @@ class App(tk.Tk):
         self.nonsmishing_label.bind("<Enter>", lambda event: self.nonsmishing_label.config(cursor="hand2"))
         self.nonsmishing_label.bind("<Button-1>", insert_ham)
         
-        self.entry = tk.Text(self, height=10, width=50, wrap="word", highlightcolor='#3477eb', highlightthickness=1, font=("Helvetica", 22))
+        self.entry = tk.Text(self, height=10, width=40, wrap="word", highlightcolor='#3477eb', highlightthickness=1, font=("Helvetica", 22))
         self.entry.grid(row=4, column=0,columnspan=4, padx=20, sticky=tk.NSEW)
         
         self.button = tk.Button(self, text="Verify", height=2, width=15, command=lambda: self.verifyMsg(), font=("Helvetica", 22))
