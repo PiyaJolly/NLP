@@ -7,7 +7,7 @@ import re
 import string
 
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import precision_score, recall_score, f1_score
+from sklearn.metrics import precision_score, recall_score, precision_recall_curve, f1_score, auc
 from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
@@ -17,7 +17,7 @@ nltk.download('stopwords')
 
 from sklearn.svm import LinearSVC
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import (RandomForestClassifier,
                               AdaBoostClassifier,
                               GradientBoostingClassifier,
@@ -26,7 +26,7 @@ from xgboost import XGBClassifier
 from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
 
-# import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 # import seaborn as sns
 
 def clean_text(text):
@@ -104,8 +104,8 @@ X_train, X_test, y_train, y_test = train_test_split(
 # LinearSVC
 svc = LinearSVC()
 
-# Linear Regression
-lr = LinearRegression()
+# # Logistic Regression
+lr = LogisticRegression()
 
 # Random Forest
 rf = RandomForestClassifier(n_estimators=500,
@@ -115,7 +115,7 @@ rf = RandomForestClassifier(n_estimators=500,
 
 # Adaboost
 base_estim = DecisionTreeClassifier(max_depth=1, max_features=0.06)                            
-ab = AdaBoostClassifier(base_estimator=base_estim,
+ab = AdaBoostClassifier(estimator=base_estim,
                         n_estimators=500,
                         learning_rate=0.5,
                         random_state=1234) 
@@ -152,7 +152,8 @@ df_results = pd.DataFrame(columns=['F1_score',
                                    'Precision',
                                    'Recall',
                                    'Accuracy',
-                                   'Execution time'])
+                                   'AUC',
+                                   'Training time'])
 
 models = [svc, lr, rf, ab, xgb, cb]
 model_names = [i.__class__.__name__ for i in models]
@@ -173,14 +174,17 @@ for m, n in zip(models, model_names):
     else:
         start_time = time()
         m.fit(X_train, y_train)
+        
 
     run_time = time() - start_time
     accuracy = np.mean(m.predict(X_test) == y_test)
     precision = precision_score(y_test, m.predict(X_test))
     recall = recall_score(y_test, m.predict(X_test))
+    p, r, t = precision_recall_curve(y_test, m.predict(X_test))
+    auc_score = auc(r, p)
     f1 = f1_score(y_test, m.predict(X_test))
-
-    df_results.loc[n] = [f1, precision, recall, accuracy, run_time]
+    df_results.loc[n] = [f1, precision, recall, accuracy, auc_score, run_time]
+    
     del m
 
 print(df_results)
