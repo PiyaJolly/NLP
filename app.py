@@ -25,7 +25,7 @@ class App(tk.Tk):
         self.examples_label.grid(row=2, column=0, padx=20, sticky=tk.W)
 
         def insert_spam(event):
-            text = "Please call our customer service representative on 0800 169 6031 between 10am-9pm as you have WON a guaranteed £1000 cash or £5000 prize!"
+            text = "Please call our customer service representative on 0800 169 6031 between 10am-9pm as you have WON a guaranteed $1000 cash or $5000 prize!"
             self.entry.delete("1.0", tk.END)  
             self.entry.insert(tk.END, text)
         
