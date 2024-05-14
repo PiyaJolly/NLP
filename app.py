@@ -35,7 +35,7 @@ class App(tk.Tk):
             self.entry.insert(tk.END, text)
 
         self.smishing_label = tk.Label(self, text="smishing", font=("Helvetica", 22), foreground='#3477eb')
-        self.smishing_label.grid(row=3, column=0, pady=(0,10), padx=(20,5), sticky=tk.W)
+        self.smishing_label.grid(row=3, column=0, pady=(0,10), padx=(20,10), sticky=tk.W)
         self.smishing_label.bind("<Enter>", lambda event: self.smishing_label.config(cursor="hand2"))
         self.smishing_label.bind("<Button-1>", insert_spam)
 
@@ -94,7 +94,7 @@ class App(tk.Tk):
             self.detection_label = tk.Label(self, text="Potential smishing content detect! Exercise\ncaution and do not provide personal information.", font=("Helvetica", 22), foreground="#a10c0a")
             self.detection_label.grid(row=5, column=0, columnspan=4, pady=20, sticky=tk.NSEW)
         self.empty_label = tk.Label(self, text='clear', font=('Helvetica', 22, 'bold'), background="white", foreground='#3477eb')
-        self.empty_label.place(relx=0.9, rely=0.76, anchor=tk.CENTER)
+        self.empty_label.place(relx=0.9, rely=0.78, anchor=tk.CENTER)
         self.empty_label.bind("<Enter>", lambda event: self.empty_label.config(cursor="hand2"))
         self.empty_label.bind("<Button-1>", self.reset)
 
