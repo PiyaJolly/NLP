@@ -4,12 +4,12 @@ This repository contains code related to the proposal and implementation of a so
 
 The structure of the repository is as follows:
 * code/: contains the python code for the development of the smishing detector
-*   gui.py: implements the GUI for the application
-*   model.py: implements code for training and evaluating seven classifiers
-*   model.pkl: the nominated pretrained machine learning model for smishing detection
-*   tfidf.pkl: fitted TF-IDF vectoriser for text vectorisation
+  * gui.py: implements the GUI for the application
+  * model.py: implements code for training and evaluating seven classifiers
+  * model.pkl: the nominated pretrained machine learning model for smishing detection
+  * tfidf.pkl: fitted TF-IDF vectoriser for text vectorisation
 * data/: contains the data used for the dataset
-*   spam.csv: CSV file containing labeled SMS messages
+  * spam.csv: CSV file containing labeled SMS messages
 
 ### Usage
 1. Run the app.py file to launch the GUI for the Smishing Detector.
