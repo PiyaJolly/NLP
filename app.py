@@ -51,6 +51,11 @@ class App(tk.Tk):
         self.button.grid(row=5, column=0, columnspan=4, pady=28)
 
     def verifyMsg(self):
+        countChar = lambda l1,l2: sum([1 for x in l1 if x in l2])
+        countCapital = lambda l1: sum([1 for x in l1 if x.isupper()])
+        countLower = lambda l1: sum([1 for x in l1 if x.islower()])
+        countDigit = lambda l1: sum([1 for x in l1 if x.isdigit()])
+        countKeyWord = lambda l1, l2: sum([1 for x in l1 if x.lower() == l2.lower()])
         with open('model.pkl', 'rb') as f:
             model = pickle.load(f)
         entry = str(self.entry.get("1.0", tk.END))
@@ -60,12 +65,10 @@ class App(tk.Tk):
         input = pd.DataFrame(message)
         input['message_cleaned'] = input['message'].apply(self.preprocess_text)
         input['message_length'] = input['message'].apply(len)
-        input['has_punctuations'] = input['message'].apply(lambda x: any(char in string.punctuation for char in x))
-        input['has_uppercase'] = input['message'].apply(lambda x: any(char.isupper() for char in x))
-        input['has_lowercase'] = input['message'].apply(lambda x: any(char.islower() for char in x))
-        input['has_titlecase'] = input['message'].apply(lambda x: any(char.istitle() for char in x))
-        input['has_special_characters'] = input['message'].apply(lambda x: any(char in ['$', '#', '@'] for char in x))
-        input['has_numerical_digits'] = input['message'].apply(lambda x: any(char.isdigit() for char in x))
+        input['count_punctuations'] = input['message'].apply(lambda s: countChar(s, string.punctuation))
+        input['count_uppercase'] = input['message'].apply(lambda s: countCapital(s))
+        input['count_lowercase'] = input['message'].apply(lambda s: countLower(s))
+        input['count_numerical_digits'] = input['message'].apply(lambda s: countDigit(s))
         input['contains_discount'] = input['message'].str.contains('discount', case=False).astype(int)
         input['contains_free'] = input['message'].str.contains('free', case=False).astype(int)
         input['contains_please'] = input['message'].str.contains('please', case=False).astype(int)
