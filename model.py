@@ -3,6 +3,16 @@ from timeit import default_timer as timer
 import numpy as np
 import pandas as pd
 import nltk
+
+import ssl
+
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
+
 import re
 import string
 
@@ -12,8 +22,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from nltk.tokenize import word_tokenize
 from nltk.stem import PorterStemmer
 from nltk.corpus import stopwords
-
-nltk.download('stopwords')
 
 from sklearn.svm import LinearSVC
 from sklearn.tree import DecisionTreeClassifier
@@ -101,7 +109,7 @@ X_train, X_test, y_train, y_test = train_test_split(
     X,
     y,
     test_size=0.2,
-    random_state=1234, 
+    random_state=1234,
     shuffle= True
 )
 
@@ -120,11 +128,11 @@ rf = RandomForestClassifier(n_estimators=500,
                             random_state=1234)
 
 # Adaboost
-base_estim = DecisionTreeClassifier(max_depth=1, max_features=0.06)                            
+base_estim = DecisionTreeClassifier(max_depth=1, max_features=0.06)
 ab = AdaBoostClassifier(estimator=base_estim,
                         n_estimators=500,
                         learning_rate=0.5,
-                        random_state=1234) 
+                        random_state=1234)
 
 # Gradient Boosted Decision Trees
 gbm = GradientBoostingClassifier(n_estimators=2000,
@@ -165,7 +173,8 @@ models = [svc, lr, rf, ab, xgb, cb]
 model_names = [i.__class__.__name__ for i in models]
 
 esp_models = ['XGBClassifier',
-             'CatBoostClassifier']
+              'CatBoostClassifier']
+
 
 start = timer()
 
@@ -174,13 +183,12 @@ for m, n in zip(models, model_names):
         start_time = time()
         m.fit(X_train,
               y_train,
-              eval_set = [(X_test, y_test)],
+              eval_set=[(X_test, y_test)],
               early_stopping_rounds=15,
               verbose=0)
     else:
         start_time = time()
         m.fit(X_train, y_train)
-        
 
     run_time = time() - start_time
     accuracy = np.mean(m.predict(X_test) == y_test)
@@ -190,10 +198,51 @@ for m, n in zip(models, model_names):
     auc_score = auc(r, p)
     f1 = f1_score(y_test, m.predict(X_test))
     df_results.loc[n] = [f1, precision, recall, accuracy, auc_score, run_time]
-    
+
     del m
 
 pickle.dump(rf, open('model.pkl', 'wb'))
 
+pd.set_option('display.max_columns', None)
 print(df_results)
 
+# GRAPHS
+metrics = ['F1_score', 'Precision', 'Recall', 'Accuracy', 'AUC']
+df_results[metrics].plot(kind='bar', figsize=(10, 6), ylim=(0.8, 1.0))
+plt.title('Model Performance Metrics')
+plt.xlabel('Models')
+plt.ylabel('Scores')
+plt.legend(loc='lower right')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+df_results['Training time'].plot(kind='bar', figsize=(10, 6), color='skyblue')
+plt.title('Training Time Comparison')
+plt.xlabel('Models')
+plt.ylabel('Training Time (seconds)')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+# PRECISION RECALL CURVE
+best_model = RandomForestClassifier(n_estimators=500,
+                                    max_features=0.06,
+                                    n_jobs=6,
+                                    random_state=1234)
+
+best_model.fit(X_train, y_train)
+
+y_scores = best_model.predict_proba(X_test)[:, 1]
+
+precision, recall, _ = precision_recall_curve(y_test, y_scores)
+
+plt.figure(figsize=(10, 6))
+plt.plot(recall, precision, label='RandomForestClassifier')
+plt.title('Precision-Recall Curve: RandomForestClassifier')
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.legend(loc='lower left')
+plt.grid(True)
+plt.tight_layout()
+plt.show()

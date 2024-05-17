@@ -3,11 +3,12 @@ import tkinter as ttk
 from ttkthemes import ThemedTk
 import pickle
 import re
-from nltk.corpus import stopwords
-from nltk.stem import PorterStemmer
 import string
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
+
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
 
 class App(tk.Tk):
     def __init__(self):
