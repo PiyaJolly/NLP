@@ -5,6 +5,7 @@ The structure of the repository is as follows:
 * code/: contains the python code for the development of the smishing detector
   * gui.py: implements the GUI for the application
   * model.py: implements code for training and evaluating seven classifiers
+* models/: contains the pretrained model and vectoriser
   * model.pkl: the nominated pretrained machine learning model for smishing detection
   * tfidf.pkl: fitted TF-IDF vectoriser for text vectorisation
 * data/: contains the data used for the dataset
