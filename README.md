@@ -1,5 +1,4 @@
-# NLP
-## Smishing Detector
+# Smishing Detector
 This repository contains code related to the proposal and implementation of a solution for detecting SMS phishing (smishing) attacks using Natural Language Processing (NLP) methods.
 
 The structure of the repository is as follows:
