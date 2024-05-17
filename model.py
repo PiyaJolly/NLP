@@ -193,7 +193,7 @@ for m, n in zip(models, model_names):
     
     del m
 
-# pickle.dump(cb, open('model.pkl', 'wb'))
+pickle.dump(rf, open('model.pkl', 'wb'))
 
 print(df_results)
 
