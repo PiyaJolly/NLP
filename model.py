@@ -60,14 +60,18 @@ dataset = pd.read_csv('spam.csv', encoding='ISO-8859-1', usecols=[0,1])
 dataset.columns = ['label', 'message']
 dataset['label'] = dataset['label'].map({'spam': 1, 'ham': 0})
 
+countChar = lambda l1,l2: sum([1 for x in l1 if x in l2])
+countCapital = lambda l1: sum([1 for x in l1 if x.isupper()])
+countLower = lambda l1: sum([1 for x in l1 if x.islower()])
+countDigit = lambda l1: sum([1 for x in l1 if x.isdigit()])
+countKeyWord = lambda l1, l2: sum([1 for x in l1 if x.lower() == l2.lower()])
+
 dataset['message_cleaned'] = dataset['message'].apply(preprocess_text)
 dataset['message_length'] = dataset['message'].apply(len)
-dataset['has_punctuations'] = dataset['message'].apply(lambda x: any(char in string.punctuation for char in x))
-dataset['has_uppercase'] = dataset['message'].apply(lambda x: any(char.isupper() for char in x))
-dataset['has_lowercase'] = dataset['message'].apply(lambda x: any(char.islower() for char in x))
-dataset['has_titlecase'] = dataset['message'].apply(lambda x: any(char.istitle() for char in x))
-dataset['has_special_characters'] = dataset['message'].apply(lambda x: any(char in ['$', '#', '@'] for char in x))
-dataset['has_numerical_digits'] = dataset['message'].apply(lambda x: any(char.isdigit() for char in x))
+dataset['count_punctuations'] = dataset['message'].apply(lambda s: countChar(s, string.punctuation))
+dataset['count_uppercase'] = dataset['message'].apply(lambda s: countCapital(s))
+dataset['count_lowercase'] = dataset['message'].apply(lambda s: countLower(s))
+dataset['count_numerical_digits'] = dataset['message'].apply(lambda s: countDigit(s))
 dataset['contains_discount'] = dataset['message'].str.contains('discount', case=False).astype(int)
 dataset['contains_free'] = dataset['message'].str.contains('free', case=False).astype(int)
 dataset['contains_please'] = dataset['message'].str.contains('please', case=False).astype(int)
@@ -189,7 +193,7 @@ for m, n in zip(models, model_names):
     
     del m
 
-pickle.dump(cb, open('model.pkl', 'wb'))
+# pickle.dump(cb, open('model.pkl', 'wb'))
 
 print(df_results)
 
